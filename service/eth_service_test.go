@@ -25,7 +25,7 @@ func TestEthereumService_GetBlock(t *testing.T) {
 		return
 	}
 	s, err := service.NewEthereumBlockChainService(url, []service.BlockListener{})
-	var svc service.BlockchainService = s
+	var svc service.BlockChainService = s
 	assert.Nil(t, err)
 
 	height := big.NewInt(20045182)

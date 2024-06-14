@@ -13,7 +13,7 @@ func GetAllPlatform() []model.Platform {
 	}
 }
 
-type BlockchainService interface {
+type BlockChainService interface {
 	GetLatestBlock() (*model.Block, error)
 
 	GetBlock(height *big.Int) (*model.Block, error)
