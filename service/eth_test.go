@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"math"
 	"math/big"
 	"os"
 	"strings"
@@ -224,4 +225,23 @@ func TestEthereumSerialize(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to marshal header: ", err)
 	}
+}
+
+func TestEthereum_NotFound(t *testing.T) {
+	url, err := service.GetInfuraApiUrlFromEnvironmentVariable()
+	if err != nil {
+		t.Log("Failed to get Infura API URL: ", err)
+		return
+	}
+
+	client, err := ethclient.Dial(url)
+	if err != nil {
+		t.Fatal("Failed to dial Infura API: ", err)
+	}
+
+	block, err := client.BlockByNumber(context.Background(), big.NewInt(math.MaxInt64))
+	if err == nil {
+		t.Fatal("Expected error, got nil")
+	}
+	t.Log(block)
 }

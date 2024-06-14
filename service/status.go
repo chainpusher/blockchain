@@ -29,10 +29,20 @@ func (s *Status) Error() string {
 }
 
 func NewError(code Code, rpcError error) error {
+	_ = OK // avoid unused error
 	return &Status{
 		Code:     code,
 		RpcError: rpcError,
 	}
+}
+
+func NewEthereumError(err error) error {
+	_, ok := err.(interface{ Error() string })
+	if ok && err.Error() == "not found" {
+		return NewError(NotFound, err)
+	}
+
+	return NewError(RpcError, err)
 }
 
 func FromError(err error) (s *Status, ok bool) {
