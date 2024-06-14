@@ -12,27 +12,27 @@ const (
 )
 
 type Status struct {
-	Code     Code
-	RpcError error
+	Code  Code
+	Cause error
 }
 
 func (s *Status) GetCode() Code {
 	return s.Code
 }
 
-func (s *Status) GetRpcError() error {
-	return s.RpcError
+func (s *Status) GetCause() error {
+	return s.Cause
 }
 
 func (s *Status) Error() string {
-	return s.RpcError.Error()
+	return s.Cause.Error()
 }
 
 func NewError(code Code, rpcError error) error {
 	_ = OK // avoid unused error
 	return &Status{
-		Code:     code,
-		RpcError: rpcError,
+		Code:  code,
+		Cause: rpcError,
 	}
 }
 
