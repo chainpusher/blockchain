@@ -80,6 +80,7 @@ func (a *TronBlockChainAssembler) ToBlock(
 	aBlock := &model.Block{
 		Height:       big.NewInt(block.BlockHeader.RawData.Number),
 		Id:           hex.EncodeToString(block.Blockid),
+		CreatedAt:    time.Unix(block.BlockHeader.RawData.Timestamp/1000, 0),
 		Transactions: transactions,
 	}
 	return aBlock, nil
