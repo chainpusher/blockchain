@@ -21,7 +21,7 @@ func (s *EthereumBlockChainService) GetLatestBlock() (*model.Block, error) {
 
 	block, err := s.client.BlockByNumber(context.Background(), nil)
 	if err != nil {
-		return nil, err
+		return nil, NewEthereumError(err)
 	}
 	for _, listener := range s.listeners {
 		go listener.AfterRawQuerying(block, nil)
@@ -29,7 +29,7 @@ func (s *EthereumBlockChainService) GetLatestBlock() (*model.Block, error) {
 
 	aBlock := s.assembler.ToBlock(block)
 	for _, listener := range s.listeners {
-		go listener.AfterQuerying(aBlock, err)
+		go listener.AfterQuerying(aBlock, nil)
 	}
 
 	return aBlock, nil
@@ -42,7 +42,7 @@ func (s *EthereumBlockChainService) GetBlock(height *big.Int) (*model.Block, err
 
 	block, err := s.client.BlockByNumber(context.Background(), height)
 	if err != nil {
-		return nil, err
+		return nil, NewEthereumError(err)
 	}
 	for _, listener := range s.listeners {
 		go listener.AfterRawQuerying(block, nil)
@@ -50,7 +50,7 @@ func (s *EthereumBlockChainService) GetBlock(height *big.Int) (*model.Block, err
 
 	aBlock := s.assembler.ToBlock(block)
 	for _, listener := range s.listeners {
-		go listener.AfterQuerying(aBlock, err)
+		go listener.AfterQuerying(aBlock, nil)
 	}
 
 	return aBlock, nil

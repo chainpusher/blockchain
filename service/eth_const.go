@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"math/big"
 	"os"
 
@@ -47,8 +48,11 @@ type EthereumContractUsdtTransfer struct {
 }
 
 func GetInfuraApiUrlFromEnvironmentVariable() (string, error) {
-
-	return InfuraApiUrl + os.Getenv("INFURA_KEY"), nil
+	key := os.Getenv("INFURA_KEY")
+	if len(key) == 0 {
+		return "", errors.New("INFURA_KEY is not set")
+	}
+	return InfuraApiUrl + key, nil
 }
 
 func GetInfuraApiUrlV2(key string) string {

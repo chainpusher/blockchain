@@ -1,6 +1,7 @@
 package service_test
 
 import (
+	"math"
 	"math/big"
 	"testing"
 
@@ -31,6 +32,22 @@ func TestEthereumService_GetBlock(t *testing.T) {
 	height := big.NewInt(20045182)
 	block, err := svc.GetBlock(height)
 	assert.Nil(t, err)
+
+	assert.Equal(t, height, block.Height, "Block height should be the same")
+}
+
+func TestEthereumService_GetBlockNotFound(t *testing.T) {
+	url, err := service.GetInfuraApiUrlFromEnvironmentVariable()
+	if err != nil {
+		return
+	}
+	s, err := service.NewEthereumBlockChainService(url, []service.BlockListener{})
+	var svc service.BlockChainService = s
+	assert.Nil(t, err)
+
+	height := big.NewInt(math.MaxInt64)
+	block, err := svc.GetBlock(height)
+	assert.NotNil(t, err)
 
 	assert.Equal(t, height, block.Height, "Block height should be the same")
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/stretchr/testify/assert"
 	"log"
 	"math"
 	"math/big"
@@ -229,19 +230,15 @@ func TestEthereumSerialize(t *testing.T) {
 
 func TestEthereum_NotFound(t *testing.T) {
 	url, err := service.GetInfuraApiUrlFromEnvironmentVariable()
-	if err != nil {
-		t.Log("Failed to get Infura API URL: ", err)
-		return
-	}
+	assert.Nilf(t, err, "Failed to get Infura API URL: %v", err)
 
 	client, err := ethclient.Dial(url)
-	if err != nil {
-		t.Fatal("Failed to dial Infura API: ", err)
-	}
+	assert.Nilf(t, err, "Failed to dial Infura API: %v", err)
 
 	block, err := client.BlockByNumber(context.Background(), big.NewInt(math.MaxInt64))
-	if err == nil {
-		t.Fatal("Expected error, got nil")
-	}
+	err = service.NewEthereumError(err)
+	isNotFound := service.IsNotFound(err)
+	assert.NotNilf(t, err, "Block should not be found: %v", err)
+	assert.Truef(t, isNotFound, "Block should not be found: %v", err)
 	t.Log(block)
 }
