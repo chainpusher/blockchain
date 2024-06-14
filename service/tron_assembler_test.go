@@ -2,6 +2,7 @@ package service_test
 
 import (
 	"encoding/hex"
+	"github.com/stretchr/testify/assert"
 	"math/big"
 	"testing"
 	"time"
@@ -41,6 +42,12 @@ func TestTronTranserContract(t *testing.T) {
 		}
 	}
 
+	assert.Error(t, err, "Error should be nil")
+	assert.NotNilf(t, transaction, "Transaction should not be nil")
+
+	if transaction == nil {
+		return
+	}
 	contract := transaction.Transaction.RawData.GetContract()[0]
 	transfer := assembler.TransactionFromTransfer(transaction, contract)
 

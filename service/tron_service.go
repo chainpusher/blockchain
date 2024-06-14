@@ -43,7 +43,10 @@ func (service *TronBlockChainService) GetBlock(height *big.Int) (*model.Block, e
 
 	block, err := service.client.GetBlockByNum(height.Int64())
 	if err != nil {
-		return nil, err
+		return nil, NewError(RpcError, err)
+	}
+	if block.BlockHeader == nil {
+		return nil, NewError(NotFound, nil)
 	}
 	for _, listener := range service.listeners {
 		listener.AfterRawQuerying(block, nil)

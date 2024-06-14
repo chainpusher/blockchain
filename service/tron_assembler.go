@@ -13,7 +13,6 @@ import (
 	"github.com/fbsobreira/gotron-sdk/pkg/address"
 	"github.com/fbsobreira/gotron-sdk/pkg/proto/api"
 	"github.com/fbsobreira/gotron-sdk/pkg/proto/core"
-	"github.com/sirupsen/logrus"
 )
 
 type TronBlockChainAssembler struct {
@@ -23,7 +22,6 @@ type TronBlockChainAssembler struct {
 }
 
 func (a *TronBlockChainAssembler) ToTransactions(args *abi.Arguments, block *api.BlockExtention) []*model.Transaction {
-	logrus.Debugf("Block transactions: %d", len(block.Transactions))
 	var transactions []*model.Transaction
 	for _, transaction := range block.Transactions {
 		contracts := transaction.GetTransaction().GetRawData().GetContract()
@@ -87,10 +85,14 @@ func (a *TronBlockChainAssembler) ToBlock(
 	return aBlock, nil
 }
 
-func (a *TronBlockChainAssembler) TransactionFromTransfer(t *api.TransactionExtention, tc *core.Transaction_Contract) *model.Transaction {
+func (a *TronBlockChainAssembler) TransactionFromTransfer(
+	t *api.TransactionExtention, tc *core.Transaction_Contract) *model.Transaction {
 	var transferContract core.TransferContract
 
-	tc.Parameter.UnmarshalTo(&transferContract)
+	err := tc.Parameter.UnmarshalTo(&transferContract)
+	if err != nil {
+		return nil
+	}
 
 	var owner address.Address = transferContract.OwnerAddress
 	var to address.Address = transferContract.ToAddress
