@@ -23,3 +23,12 @@ func (b *Block) GenerateTimeToNextBlock() time.Time {
 func (b *Block) IsAcrossMultipleBlocks() bool {
 	return false
 }
+
+func (b *Block) CloneWithTransactions(transactions []*Transaction) *Block {
+	return &Block{
+		Height:       b.Height,
+		Id:           b.Id,
+		Transactions: transactions,
+		CreatedAt:    b.CreatedAt,
+	}
+}
