@@ -19,4 +19,6 @@ func TestStatus_Error(t *testing.T) {
 
 	assert.Truef(t, ok, "Error should be a status")
 	assert.Equal(t, service.Other, status.Code)
+	assert.Nil(t, status.RpcError)
+	assert.Falsef(t, service.IsNotFound(err), "Error should not be NotFound")
 }

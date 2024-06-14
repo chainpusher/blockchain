@@ -48,9 +48,10 @@ func FromError(err error) (s *Status, ok bool) {
 	return nil, false
 }
 
-func NewStatus(code Code, err error) *Status {
-	return &Status{
-		Code:     code,
-		RpcError: err,
+func IsNotFound(err error) bool {
+	status, ok := FromError(err)
+	if !ok {
+		return false
 	}
+	return status.Code == NotFound
 }
