@@ -105,7 +105,7 @@ func (a *TronBlockChainAssembler) TransactionFromTransfer(
 		Amount:         *amount,
 		Payer:          owner.String(),
 		Payee:          to.String(),
-		CreatedAt:      time.Unix(t.Transaction.RawData.Timestamp, 0),
+		CreatedAt:      time.Unix(t.Transaction.RawData.Timestamp/1000, 0),
 	}
 
 	return &transfer
@@ -143,7 +143,7 @@ func (a *TronBlockChainAssembler) TransactionFromContract(
 			Amount:         *amount,
 			Payer:          address.Address(contract.OwnerAddress).String(),
 			Payee:          tronAddress.String(),
-			CreatedAt:      time.Unix(t.Transaction.RawData.Timestamp, 0),
+			CreatedAt:      time.Unix(t.Transaction.RawData.Timestamp/1000, 0),
 		},
 		nil
 }
