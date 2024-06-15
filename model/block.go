@@ -6,13 +6,13 @@ import (
 )
 
 type Block struct {
-	Height *big.Int
+	Height *big.Int `json:"height"`
 
-	Id string
+	Id string `json:"id"`
 
-	Transactions []*Transaction
+	Transactions []*Transaction `json:"transactions"`
 
-	CreatedAt time.Time
+	CreatedAt time.Time `json:"created_at"`
 }
 
 func (b *Block) GenerateTimeToNextBlock() time.Time {

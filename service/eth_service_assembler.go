@@ -72,7 +72,7 @@ func (a *EthereumServiceAssembler) ToUsdtTransferArguments(data *[]byte) (*Ether
 func (a *EthereumServiceAssembler) ToTransaction(t *types.Transaction) *model.Transaction {
 
 	var crypto model.CryptoCurrency
-	var from string = PraseEthereumTransactionFromAddress(t)
+	var from string = ParseEthereumTransactionFromAddress(t)
 	var to string
 	var amount *big.Int
 
@@ -99,13 +99,22 @@ func (a *EthereumServiceAssembler) ToTransaction(t *types.Transaction) *model.Tr
 		return nil
 	}
 
+	var createdAt time.Time = t.Time()
+	// Time.MarshalJSON: year outside of range [0,9999]
+	if createdAt.Year() < 0 || createdAt.Year() > 9999 {
+		createdAt = time.Unix(0, 0)
+	}
+
+	txId := t.Hash().String()
+
 	return &model.Transaction{
+		Id:             txId,
 		Platform:       model.PlatformEthereum,
 		CryptoCurrency: crypto,
 		Payee:          from,
 		Payer:          to,
 		Amount:         *amount,
-		CreatedAt:      time.Now(),
+		CreatedAt:      t.Time(),
 	}
 }
 
@@ -124,7 +133,7 @@ func (a *EthereumServiceAssembler) BlockToTransactions(block *types.Block) []*mo
 
 }
 
-func PraseEthereumTransactionFromAddress(t *types.Transaction) string {
+func ParseEthereumTransactionFromAddress(t *types.Transaction) string {
 	var signer types.Signer
 	if t.Type() == types.AccessListTxType {
 		signer = types.NewEIP2930Signer(t.ChainId())

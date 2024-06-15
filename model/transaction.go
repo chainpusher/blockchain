@@ -7,17 +7,19 @@ import (
 )
 
 type Transaction struct {
-	Platform Platform
+	Platform Platform `json:"platform"`
 
-	CryptoCurrency CryptoCurrency
+	CryptoCurrency CryptoCurrency `json:"crypto_currency"`
 
-	Payee string
+	Id string `json:"id"`
 
-	Payer string
+	Payee string `json:"payee"`
 
-	Amount big.Int
+	Payer string `json:"payer"`
 
-	CreatedAt time.Time
+	Amount big.Int `json:"amount"`
+
+	CreatedAt time.Time `json:"createdAt"`
 }
 
 func (t *Transaction) Logging() string {

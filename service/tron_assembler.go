@@ -98,14 +98,22 @@ func (a *TronBlockChainAssembler) TransactionFromTransfer(
 	var owner address.Address = transferContract.OwnerAddress
 	var to address.Address = transferContract.ToAddress
 	amount := big.NewInt(transferContract.Amount)
+	txId := hex.EncodeToString(t.Txid)
+
+	var createdAt time.Time = time.Unix(t.Transaction.RawData.Timestamp/1000, 0)
+	// Time.MarshalJSON: year outside of range [0,9999]
+	if createdAt.Year() < 0 || createdAt.Year() > 9999 {
+		createdAt = time.Unix(0, 0)
+	}
 
 	transfer := model.Transaction{
+		Id:             txId,
 		Platform:       model.PlatformTron,
 		CryptoCurrency: model.TRX,
 		Amount:         *amount,
 		Payer:          owner.String(),
 		Payee:          to.String(),
-		CreatedAt:      time.Unix(t.Transaction.RawData.Timestamp/1000, 0),
+		CreatedAt:      createdAt,
 	}
 
 	return &transfer
@@ -137,13 +145,22 @@ func (a *TronBlockChainAssembler) TransactionFromContract(
 
 	tronAddress := ToTronAddress(ethAddress)
 
+	txId := hex.EncodeToString(t.Txid)
+
+	var createdAt time.Time = time.Unix(t.Transaction.RawData.Timestamp/1000, 0)
+	// Time.MarshalJSON: year outside of range [0,9999]
+	if createdAt.Year() < 0 || createdAt.Year() > 9999 {
+		createdAt = time.Unix(0, 0)
+	}
+
 	return &model.Transaction{
+			Id:             txId,
 			Platform:       model.PlatformTron,
 			CryptoCurrency: model.TronUSDT,
 			Amount:         *amount,
 			Payer:          address.Address(contract.OwnerAddress).String(),
 			Payee:          tronAddress.String(),
-			CreatedAt:      time.Unix(t.Transaction.RawData.Timestamp/1000, 0),
+			CreatedAt:      createdAt,
 		},
 		nil
 }

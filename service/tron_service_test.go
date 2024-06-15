@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"math/big"
 	"testing"
 
@@ -36,11 +37,17 @@ func TestTronService_GetLatestBlock(t *testing.T) {
 func TestTronService_GetBlock(t *testing.T) {
 	service := NewTronBlockChainService(c, []BlockListener{})
 
-	block, err := service.GetBlock(big.NewInt(62544893))
+	// 62606270
+	// 62544893
+	block, err := service.GetBlock(big.NewInt(62606533))
 	if err != nil {
 		t.Errorf("GetBlock() error = %v", err)
 		return
 	}
+
+	serialized, err := json.Marshal(block)
+	assert.Nil(t, err)
+	assert.NotNil(t, serialized)
 
 	assert.NotNil(t, block)
 	assert.Greater(t, len(block.Transactions), 0, "Block should have transactions")

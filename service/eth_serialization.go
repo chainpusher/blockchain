@@ -62,7 +62,7 @@ func (t *EthereumTransaction) FromTransaction(block *types.Block, tx *types.Tran
 	} else {
 		t.To = EthereumEmptyAddress
 	}
-	t.From = PraseEthereumTransactionFromAddress(tx)
+	t.From = ParseEthereumTransactionFromAddress(tx)
 
 	t.Value = tx.Value()
 	t.Time = tx.Time()
