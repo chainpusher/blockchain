@@ -1,7 +1,11 @@
 package service
 
 import (
+	"bytes"
 	"context"
+	"encoding/hex"
+	"errors"
+	"github.com/fbsobreira/gotron-sdk/pkg/proto/api"
 	"net"
 	"net/http"
 	"net/url"
@@ -15,6 +19,21 @@ import (
 
 var TronUsdtAddress string = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t"
 var TronTriggerSmartyContract string = "type.googleapis.com/protocol.TriggerSmartContract"
+
+func FindTronTransaction(block *api.BlockExtention, txId string) (*api.TransactionExtention, error) {
+	txText, err := hex.DecodeString(txId)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range block.Transactions {
+		if bytes.Equal(item.Txid, txText) {
+			return item, nil
+		}
+	}
+
+	return nil, errors.New("transaction not found")
+}
 
 // Converts an Ethereum address to a Tron address.
 func ToTronAddress(addr common.Address) address.Address {

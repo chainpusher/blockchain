@@ -165,7 +165,8 @@ func (a *TronBlockChainAssembler) TransactionFromContract(
 		nil
 }
 
-func (a *TronBlockChainAssembler) ToTransaction(args *abi.Arguments, t *api.TransactionExtention, tc *core.Transaction_Contract) (*model.Transaction, error) {
+func (a *TronBlockChainAssembler) ToTransaction(
+	args *abi.Arguments, t *api.TransactionExtention, tc *core.Transaction_Contract) (*model.Transaction, error) {
 
 	if tc.GetType() == core.Transaction_Contract_TransferContract {
 		return a.TransactionFromTransfer(t, tc), nil
@@ -176,6 +177,22 @@ func (a *TronBlockChainAssembler) ToTransaction(args *abi.Arguments, t *api.Tran
 	}
 
 	return nil, errors.New("unknown contract type")
+}
+
+func (a *TronBlockChainAssembler) IsTransferContract(
+	contract *core.Transaction_Contract) bool {
+	return contract.GetType() == core.Transaction_Contract_TransferContract
+}
+
+func (a *TronBlockChainAssembler) GetTransferContract(
+	contract *core.Transaction_Contract) (*core.TransferContract, error) {
+	var transferContract core.TransferContract
+	err := contract.Parameter.UnmarshalTo(&transferContract)
+	if err != nil {
+		return nil, err
+	}
+
+	return &transferContract, nil
 }
 
 func NewTronBlockChainAssembler() *TronBlockChainAssembler {

@@ -130,3 +130,26 @@ func TestTron_GenesisBlock(t *testing.T) {
 		t.Error("Block id is incorrect")
 	}
 }
+
+func TestTron_Transaction(t *testing.T) {
+	assembler := NewTronBlockChainAssembler()
+
+	c, err := NewTronClient()
+	assert.Nil(t, err)
+
+	block, err := c.GetBlockByNum(62606533)
+	assert.Nil(t, err)
+
+	tx, err := FindTronTransaction(block, "f7d458ba11a0baeb63705fc46dfa26870dc41bd731883913f08af8421cc52d98")
+	assert.Nil(t, err)
+	assert.NotNil(t, tx)
+
+	contract := tx.Transaction.GetRawData().GetContract()[0]
+	assert.True(t, assembler.IsTransferContract(contract))
+
+	transfer, err := assembler.GetTransferContract(contract)
+	assert.Nil(t, err)
+
+	var owner address.Address = transfer.GetOwnerAddress()
+	assert.Equal(t, "TKnhmwz5X3WBecr5k58yPq3rbV25Mw5VKi", owner.String())
+}
