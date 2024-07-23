@@ -100,7 +100,7 @@ func (a *TronBlockChainAssembler) TransactionFromTransfer(
 	amount := big.NewInt(transferContract.Amount)
 	txId := hex.EncodeToString(t.Txid)
 
-	var createdAt time.Time = time.Unix(t.Transaction.RawData.Timestamp/1000, 0)
+	var createdAt = time.Unix(t.Transaction.RawData.Timestamp/1000, 0)
 	// Time.MarshalJSON: year outside of range [0,9999]
 	if createdAt.Year() < 0 || createdAt.Year() > 9999 {
 		createdAt = time.Unix(0, 0)
@@ -132,6 +132,10 @@ func (a *TronBlockChainAssembler) TransactionFromContract(
 
 	if address.Address(contract.ContractAddress).String() != TronUsdtAddress {
 		return nil, errors.New("contract address is not USDT")
+	}
+
+	if len(contract.Data) == 0 {
+		return nil, errors.New("contract data is empty")
 	}
 
 	unpacked, err := arg.Unpack(contract.Data[4:])

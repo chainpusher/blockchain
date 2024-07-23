@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"math/big"
 	"strings"
 	"time"
@@ -13,25 +14,25 @@ import (
 )
 
 type EthereumServiceAssembler struct {
-	ParsedABI     abi.ABI
-	TansferMethod *abi.Method
+	parsedABI      abi.ABI
+	transferMethod *abi.Method
 }
 
 func NewEthereumServiceAssembler() (*EthereumServiceAssembler, error) {
 
-	abi, err := abi.JSON(strings.NewReader(EthereumUsdtAbi))
+	theAbi, err := abi.JSON(strings.NewReader(EthereumUsdtAbi))
 	if err != nil {
 		return nil, err
 	}
 
-	method, err := abi.MethodById(EthereumUsdtMethodTransfer)
+	method, err := theAbi.MethodById(EthereumUsdtMethodTransfer)
 	if err != nil {
 		return nil, err
 	}
 
 	return &EthereumServiceAssembler{
-		ParsedABI:     abi,
-		TansferMethod: method,
+		parsedABI:      theAbi,
+		transferMethod: method,
 	}, nil
 }
 
@@ -49,13 +50,16 @@ func (a *EthereumServiceAssembler) ToBlock(block *types.Block) *model.Block {
 	}
 }
 
-func (a *EthereumServiceAssembler) ToUsdtTransferArguments(data *[]byte) (*EthereumContractUsdtTransfer, error) {
+func (a *EthereumServiceAssembler) ToUSDTTransferArguments(data *[]byte) (*EthereumContractUsdtTransfer, error) {
 
 	var to common.Address
 	var amount *big.Int
 
-	b := (*data)
-	args, err := a.TansferMethod.Inputs.Unpack(b[4:])
+	b := *data
+	if len(b) == 0 {
+		return nil, errors.New("empty data")
+	}
+	args, err := a.transferMethod.Inputs.Unpack(b[4:])
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +76,7 @@ func (a *EthereumServiceAssembler) ToUsdtTransferArguments(data *[]byte) (*Ether
 func (a *EthereumServiceAssembler) ToTransaction(t *types.Transaction) *model.Transaction {
 
 	var crypto model.CryptoCurrency
-	var from string = ParseEthereumTransactionFromAddress(t)
+	var from = ParseEthereumTransactionFromAddress(t)
 	var to string
 	var amount *big.Int
 
@@ -84,7 +88,7 @@ func (a *EthereumServiceAssembler) ToTransaction(t *types.Transaction) *model.Tr
 	if t.To().String() == EthereumUsdtAddress {
 		crypto = model.EthereumUSDT
 		data := t.Data()
-		transfer, err := a.ToUsdtTransferArguments(&data)
+		transfer, err := a.ToUSDTTransferArguments(&data)
 		if err != nil {
 			return nil
 		}

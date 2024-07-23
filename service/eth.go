@@ -36,7 +36,7 @@ func (s *EthereumClient) GetBlock(number *big.Int) (*types.Block, error) {
 			return
 		}
 
-		var txs EthereumTransactions = make(EthereumTransactions, len(block.Transactions()))
+		var txs = make(EthereumTransactions, len(block.Transactions()))
 		txs.FromTransactions(block, block.Transactions())
 
 		s.Channel <- txs

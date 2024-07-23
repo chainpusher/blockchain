@@ -19,7 +19,7 @@ func TestEthereumServiceAssemblerToTransfer(t *testing.T) {
 
 	data := "0xa9059cbb0000000000000000000000005b6d5bb6995a7c21aac64c78a4c5b88470a0b15e0000000000000000000000000000000000000000000000000000000000000001"
 	dataBytes := common.FromHex(data)
-	transfer, err := assembler.ToUsdtTransferArguments(&dataBytes)
+	transfer, err := assembler.ToUSDTTransferArguments(&dataBytes)
 
 	if err != nil {
 		t.Error("Failed to parse transfer arguments: ", err)
